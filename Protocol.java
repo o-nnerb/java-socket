@@ -107,7 +107,7 @@ public class Protocol {
     }
 
     public Data asRaw() {
-        return Data.init(("<Protocol-" + this.code.name() + "-" + this.contentType.rawValue.toString() + "-").getBytes())
+        return Data.init(("<Protocol-" + this.code.rawValue + "-" + this.contentType.rawValue.toString() + "-").getBytes())
             .merge(this.data)
             .merge(Data.init("->".getBytes()));
     }
@@ -161,7 +161,7 @@ public class Protocol {
 
         ArrayList<Data> params = parameters(data.slice("<Protocol-".length(), data.size() - "->".length()).get(), 2);
 
-        Optional<ResponseCode> code = ResponseCode.init(new String(params.get(0).bytes));
+        Optional<ResponseCode> code = ResponseCode.init(Integer.parseInt(new String(params.get(0).bytes)));
         Optional<ContentType> contentType = ContentType.init(Integer.parseInt(new String(params.get(1).bytes)));
         Data middle = params.get(2);
 

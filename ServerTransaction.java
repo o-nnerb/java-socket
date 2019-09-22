@@ -45,8 +45,9 @@ public class ServerTransaction extends Transaction {
                   .create();
       }
 
-      public void connect() {
-            this.accept().ifPresent(t -> {
+      public Boolean connect() {
+            Optional<TransactionSocket> socket = this.accept();
+            socket.ifPresent(t -> {
                   String ip = t.socket.ip();
                   Integer port = t.socket.port();
                   System.out.println("Got connection from " + ip + " " + port.toString());
@@ -55,13 +56,15 @@ public class ServerTransaction extends Transaction {
                         this.updateThreads(thread);
                   });
             });
+
+            return socket.isPresent();
       }
       
       @Override
       public void socketDidClose() {
             super.socketDidClose();
 
-            for(int i = 0; i <= this.threads.size(); i++) {
+            for(int i = 0; i < this.threads.size(); i++) {
                   if (this.threads.get(i).isEmpty()) {
                         this.threads.remove(i);
                   } else {
@@ -74,7 +77,7 @@ public class ServerTransaction extends Transaction {
 
       public static void start(Optional<ServerTransaction> optional) {
             optional.ifPresent(server -> {
-                  while (server.accept().isPresent());
+                  while (server.connect());
 
                   for (Optional<Thread> t: server.threads) {
                         t.ifPresent(thread -> {
@@ -88,6 +91,6 @@ public class ServerTransaction extends Transaction {
       }
 
       public static void main(String args[]) {
-           ServerTransaction.start(ServerTransaction.tcp(8888));
+           ServerTransaction.start(ServerTransaction.tcp(9999));
       } 
 }

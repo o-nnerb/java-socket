@@ -1,9 +1,3 @@
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.Optional;
 
 public class Transaction {
@@ -36,6 +30,8 @@ public class Transaction {
 
       public Optional<TransactionSocket> accept() {
             Optional<SocketProvider> socket = SocketProvider.accept(this.provider);
+            System.out.println("Conexão estabelecida");
+
             if (socket.isPresent()) {
                   return Optional.of(new TransactionSocket(this, socket.get(), this.buffer));
             } 

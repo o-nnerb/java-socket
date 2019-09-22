@@ -2,9 +2,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Optional;
+import java.util.Scanner;
+import java.lang.Math;
 
 public class SocketProvider {
       final private Object o;
@@ -46,13 +47,31 @@ public class SocketProvider {
             return Optional.empty();
       }
 
+      private byte[] tcpRead(InputStream input, Integer buffer) throws Exception {
+            Integer size = 0;
+            Integer scale = 0;
+            byte[] b = new byte[1];
+            
+            while (input.read(b) > 0) {
+                  if (b[0] == "<".getBytes()[0]) {
+                        final Integer length = size-1 >= buffer ? buffer : size-1;
+                        byte[] readed = input.readNBytes(length);
+                        // input.close();
+                        return Data.init(b).merge(Data.init(readed)).bytes;
+                  } else {
+                        size = (int) ((size) * Math.pow(10.0, (double) scale)) + Integer.parseInt(new String(b));
+                        scale += 1;
+                  }
+            }
+
+            // input.close();
+            return new byte[0];
+      }
+
       public byte[] read(Integer buffer) {
             try {
                   if (this.tcp().isPresent()) {
-                        InputStream input = this.tcp().get().getInputStream();
-                        byte[] readed = input.readNBytes(buffer);
-                        input.close();
-                        return readed;
+                        return this.tcpRead(this.tcp().get().getInputStream(), buffer);
                   }
 
                   byte[] readed = new byte[buffer];
@@ -67,15 +86,16 @@ public class SocketProvider {
       }
 
       public void write(byte[] bytes) {
+            final Data send = Data.init(((Integer) (bytes.length)).toString().getBytes()).merge(Data.init(bytes));
             try {
-                  if (this.udp().isPresent()) {
+                  if (!this.udp().isPresent()) {
                         OutputStream out = this.tcp().get().getOutputStream();
-                        out.write(bytes);
-                        out.close();
+                        out.write(send.bytes);
+                        // out.close();
                         return;
                   }
 
-                  DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
+                  DatagramPacket packet = new DatagramPacket(send.bytes, send.bytes.length);
                   this.udp().get().send(packet);
                   return;
             } catch (Exception e) {

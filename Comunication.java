@@ -1,5 +1,3 @@
-import java.io.DataOutputStream;
-import java.net.Socket;
 import java.util.Optional;
 
 public class Comunication {

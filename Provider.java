@@ -1,9 +1,5 @@
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.Optional;
 
 public class Provider {
@@ -17,6 +13,7 @@ public class Provider {
 
       public static Optional<Provider> tcp(Integer port) {
             try {
+                  System.out.println("Aguardando conexão na porta " + port.toString());
                   return Optional.of(new Provider(new ServerSocket(port), port));
             } catch (Exception e) {
                   return Optional.empty();

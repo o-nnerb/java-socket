@@ -43,4 +43,8 @@ public class ResultType {
             return Optional.empty();
       }
 
+      public Boolean isFalse() {
+            return this.bool().isPresent() && !this.bool().get();
+      }
+
 }

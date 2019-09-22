@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Optional;
 
 public class ClientThread extends Thread {
@@ -59,7 +58,7 @@ public class ClientThread extends Thread {
       private Boolean observe() {
             ResultType result = this.socket.waitForResponse();
             
-            if (!result.bool().isPresent() || !result.bool().get()) {
+            if (result.isFalse()) {
                   this.socket.commit(Comunication.send(Protocol.cutConnection()));
                   return false;
             }

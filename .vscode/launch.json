@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - ServerTransaction",
+            "request": "launch",
+            "mainClass": "ServerTransaction",
+            "projectName": "java-socket_a5f626e1"
+        }
+    ]
+}
