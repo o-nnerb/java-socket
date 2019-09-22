@@ -20,6 +20,8 @@ public class Transaction {
             this.buffer = buffer;
       }
 
+      public void socketDidClose() {}
+
       public static Optional<Transaction> connect(ProviderType providerType, Integer port) {
             Optional<Provider> provider = providerType == ProviderType.udp ?
                   Provider.udp(port) :

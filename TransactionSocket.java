@@ -23,6 +23,10 @@ public class TransactionSocket {
             System.out.println("Connection Closed");
       }
 
+      public void notifyTransaction() {
+            this.transaction.socketDidClose();
+      }
+
       public ResultType commit(Comunication comunication) {
             return comunication.buffer(this.buffer).execute(this.socket, false);
       }

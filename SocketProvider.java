@@ -102,4 +102,19 @@ public class SocketProvider {
             });
       }
 
+      public String ip() {
+            if (this.tcp().isPresent()) {
+                  return this.tcp().get().getInetAddress().getHostAddress();
+            }
+            
+            return this.udp().get().getInetAddress().getHostAddress();
+      }
+
+      public Integer port() {
+            if (this.tcp().isPresent()) {
+                  return this.tcp().get().getPort();
+            }
+            
+            return this.udp().get().getPort();
+      }
 }
