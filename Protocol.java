@@ -35,7 +35,7 @@ public class Protocol {
     }
 
     public static Protocol data(byte[] data) {
-        return new Protocol(ResponseCode.data, new String(data));
+        return new Protocol(ResponseCode.data, Data.init(data));
     }
 
     public static Protocol buffer(Integer bufferSize) {
@@ -188,29 +188,31 @@ public class Protocol {
         return "Protocol "+ this.code.name() +"\nMessage: "+ new String(this.data.bytes) +"\n";
     }
 
-    // public static void main(String[] args) {
-    //     final String srcfileName = "/home/brennogm/java-socket/img.jpg";
-    //     final String dstfileName = "/home/brennogm/java-socket/result.jpg";
+    public Boolean isError() {
+        if (this.code == ResponseCode.error) {
+            return true;
+        }
 
-    //     FileByte.open(srcfileName, 1024, false).ifPresent(file -> {
-    //         Optional<FileByte> dst = FileByte.open(dstfileName, 1024, true);
-    //         while (!file.isEndOfFile()) {
-    //             Optional<Protocol> result = Protocol.fromData(Protocol
-    //                 .fragment(1024, Optional.of(file))
-    //                 .asRaw()
-    //             );
+        if (this.code == ResponseCode.notFound) {
+            return true;
+        }
 
-    //             if (result.isPresent() && dst.isPresent()) {
-    //                 ArrayList<Byte> array = new ArrayList();
-    //                 for (byte b: result.get().data.bytes) {
-    //                     array.add(b);
-    //                 }
+        if (this.code == ResponseCode.cutConnection) {
+            return true;
+        }
 
-    //                 dst.get().append(array, 1);
-    //             }
-    //         }
-            
-    //         dst.ifPresent(t -> t.saveAll());
-    //     });
-    // }
+        if (this.code == ResponseCode.bytesError) {
+            return true;
+        }
+
+        if (this.code == ResponseCode.refused) {
+            return true;
+        }
+
+        if (this.code == ResponseCode.notAllowed) {
+            return true;
+        }
+
+        return false;
+    }
 }

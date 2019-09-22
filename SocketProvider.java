@@ -4,7 +4,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Socket;
 import java.util.Optional;
-import java.util.Scanner;
 import java.lang.Math;
 
 public class SocketProvider {
@@ -120,6 +119,14 @@ public class SocketProvider {
                         System.out.println(e.getMessage());
                   }
             });
+      }
+
+      public Boolean isOpen() {
+            if (this.tcp().isPresent()) {
+                  return this.tcp().get().isConnected();
+            }
+
+            return this.udp().get().isConnected();
       }
 
       public String ip() {

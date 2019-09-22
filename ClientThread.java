@@ -4,11 +4,13 @@ public class ClientThread extends Thread {
       final String ip;
       final Integer port;
       final TransactionSocket socket;
+      final SocketDelegate delegate;
 
-      private ClientThread(String ip, Integer port, TransactionSocket socket) {
+      private ClientThread(String ip, Integer port, TransactionSocket socket, SocketDelegate delegate) {
             this.ip = ip;
             this.port = port;
             this.socket = socket;
+            this.delegate = delegate;
       }
 
       public static Optional<ClientThread> constructor(ClientConstructor constructor) {
@@ -16,43 +18,16 @@ public class ClientThread extends Thread {
                   return Optional.empty();
             }
 
+            if (!constructor.delegate.isPresent()) {
+                  return Optional.empty();
+            }
+
             return Optional.of(new ClientThread(
                   constructor.ip,
                   constructor.port,
-                  constructor.socket.get()
+                  constructor.socket.get(),
+                  constructor.delegate.get()
             ));
-      }
-
-      private ResultType asGuest(Protocol protocol) {
-            // if protocol.code == ResponseCode.auth:
-            //     return self.auth(protocol)
-
-            // if something
-            //    return
-
-            // else [error]
-            return ResultType.init(Comunication.send(Protocol.notAllowed()));
-      }
-
-      private void didReceived(Protocol protocol) {
-            Optional<ResultType> result = Optional.empty();
-            // if self.isAuthenticated:
-            //     toCommit = self.asUser(protocol)
-            if (false) {}
-            else {
-                  result = Optional.of(this.asGuest(protocol));
-            }
-
-            if (result.isEmpty()) {
-                  this.socket.commit(Comunication.refused());
-                  return;
-            }
-            
-            result.ifPresent(r -> {
-                  r.comunication() .ifPresent(c -> {
-                        this.socket.commit(c);
-                  });
-            });
       }
 
       private Boolean observe() {
@@ -69,9 +44,33 @@ public class ClientThread extends Thread {
                   return false;
             }
 
-            System.out.println(result.protocol().get().asString());
-            this.didReceived(result.protocol().get());
+            this.delegate.received(result.protocol().get(), this.getId());
+            this.waitForSend();
+            this.send.ifPresent(protocol -> {
+                  this.socket.commit(Comunication.send(protocol));
+                  this.send = Optional.empty();
+            });
+
             return true;
+      }
+
+      private Optional<Protocol> send = Optional.empty();
+
+      public void send(Protocol protocol) {
+            this.send = Optional.of(protocol);
+      }
+
+      private void waitForSend() {
+            try {
+                  synchronized(this) {
+                        while(this.send.isEmpty()) {
+                              this.wait();
+                        }
+                  }
+            } catch (Exception e) {
+                  System.out.println(e.getMessage());
+                  while(this.send.isEmpty());
+            }
       }
 
       @Override

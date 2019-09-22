@@ -2,6 +2,24 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - ServerApp",
+            "request": "launch",
+            "mainClass": "ServerApp"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - ServerTransaction",
+            "request": "launch",
+            "mainClass": "ServerTransaction"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Protocol",
+            "request": "launch",
+            "mainClass": "Protocol"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - ServerTransaction",
             "request": "launch",
             "mainClass": "ServerTransaction",

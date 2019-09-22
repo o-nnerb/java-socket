@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class ServerTransaction extends Transaction {
+      Optional<SocketDelegate> delegate = Optional.empty();
       ServerTransaction(Provider provider) {
             super(provider);
       }
@@ -42,6 +43,7 @@ public class ServerTransaction extends Transaction {
       public Optional<ClientThread> openThread(String ip, Integer port, Optional<TransactionSocket> socket) {
             return ClientThread.open(ip, port)
                   .andConnection(socket)
+                  .withDelegate(this.delegate)
                   .create();
       }
 
@@ -90,7 +92,15 @@ public class ServerTransaction extends Transaction {
             });
       }
 
-      public static void main(String args[]) {
-           ServerTransaction.start(ServerTransaction.tcp(9999));
-      } 
+      public Optional<ClientThread> thread(final long clientId) {
+            for (Optional<Thread> client: this.threads) {
+                  if (client.isPresent() && client.get().isAlive()) {
+                        if (client.get().getId() == clientId) {
+                              return Optional.of((ClientThread) client.get());
+                        }
+                  }
+            }
+
+            return Optional.empty();
+      }
 }
